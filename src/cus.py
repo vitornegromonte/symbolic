@@ -9,28 +9,28 @@ class UCS:
     
     def search(self):
         """
-        Searches for the least cost path from the start node to the goal node using Uniform Cost Search (UCS).
+        Busca pelo caminho de menor custo do nó inicial ao nó objetivo usando a busca de custo uniforme (UCS).
         
         Returns:
-            A list of nodes representing the path from the start to the goal, or None if no path exists.
+            Uma lista de nós representando o caminho do início ao objetivo, ou None se nenhum caminho existir.
         """
         
-        # frontier is a priority queue that holds tuples of (cost, node, path)
+        # frontier é uma fila de prioridade que contém tuplas de (custo, nó, caminho)
         frontier = []
-        heapq.heappush(frontier, (0, self.start, [self.start])) # initialize the frontier with the start node, cost - 0, and path containing only the start node
+        heapq.heappush(frontier, (0, self.start, [self.start])) # adicionar o nó inicial à fronteira com custo 0 e caminho contendo apenas o nó inicial
         
-        # Set to keep track of visited nodes
+        # conjunto de nós visitados
         visited = set() 
         
         while frontier:
-            cost, node, path = heapq.heappop(frontier) # get the node with the lowest cost from the frontier
+            cost, node, path = heapq.heappop(frontier) # pop o nó com o menor custo da fronteira
             if node in visited:
-                continue # skip if the node has already been visited
+                continue # ignora se o nó já foi visitado
             if node == self.goal:
-                return cost, path # return the total cost and the path to the goal
+                return cost, path # retorna o custo total e o caminho encontrado se o nó objetivo for alcançado
             visited.add(node)
             
-            # expand the node by adding its neighbors to the frontier with their respective costs
+            # explora os vizinhos do nó atual e adiciona à fronteira se ainda não foram visitadoss
             for neighbor, edge_cost in self.graph.get(node, []):
                 if neighbor not in visited:
                     new_cost = cost + edge_cost 
@@ -42,11 +42,21 @@ class UCS:
 if __name__ == "__main__":
     graph = {
         'A': [('B', 1), ('C', 4)],
-        'B': [('A', 1), ('D', 2)],
-        'C': [('A', 4), ('D', 5)],
-        'D': [('B', 2), ('C', 5)]
+        'B': [('A', 1), ('C', 2), ('D', 5)],
+        'C': [('A', 4), ('B', 2), ('E', 3)],
+        'D': [('B', 5), ('E', 1)],
+        'E': [('C', 3), ('D', 1)]
     }
     
-    ucs = UCS(graph, 'A', 'D')
-    result = ucs.search()
-    print(result)
+    inicio = 'A'
+    objetivo = 'E'
+        
+    ucs = UCS(graph, inicio, objetivo)
+    resultado = ucs.search()
+    
+    if isinstance(resultado, tuple):
+        custo, caminho = resultado
+        print(f"Custo total: {custo}")
+        print(f"Caminho encontrado: {' -> '.join(caminho)}")
+    else:
+        print(resultado)
