@@ -15,15 +15,16 @@ class UCS:
             Uma lista de nós representando o caminho do início ao objetivo, ou None se nenhum caminho existir.
         """
         
-        # frontier é uma fila de prioridade que contém tuplas de (custo, nó, caminho)
+        # frontier é uma fila de prioridade que contém tuplas de (custo, counter, nó, caminho)
         frontier = []
-        heapq.heappush(frontier, (0, self.start, [self.start])) # adicionar o nó inicial à fronteira com custo 0 e caminho contendo apenas o nó inicial
+        counter = 0 # heapq não suporta comparação direta de tuplas quando os custos são iguais, então usamos um contador para garantir a ordem de inserção
+        heapq.heappush(frontier, (0, counter, self.start, [self.start])) # adicionar o nó inicial à fronteira com custo 0 e caminho contendo apenas o nó inicial
         
         # conjunto de nós visitados
         visited = set() 
         
         while frontier:
-            cost, node, path = heapq.heappop(frontier) # pop o nó com o menor custo da fronteira
+            cost, _, node, path = heapq.heappop(frontier) # pop o nó com o menor custo da fronteira
             if node in visited:
                 continue # ignora se o nó já foi visitado
             if node == self.goal:
@@ -35,9 +36,10 @@ class UCS:
                 if neighbor not in visited:
                     new_cost = cost + edge_cost 
                     new_path = path + [neighbor]
-                    heapq.heappush(frontier, (new_cost, neighbor, new_path))
+                    counter += 1
+                    heapq.heappush(frontier, (new_cost, counter, neighbor, new_path))
                 
-        return "Caminho não encontrado"
+        return 'Caminho não encontrado'
     
 if __name__ == "__main__":
     graph = {
@@ -56,7 +58,7 @@ if __name__ == "__main__":
     
     if isinstance(resultado, tuple):
         custo, caminho = resultado
-        print(f"Custo total: {custo}")
-        print(f"Caminho encontrado: {' -> '.join(caminho)}")
+        print(f'Custo total: {custo}')
+        print(f'Caminho encontrado: {" -> ".join(caminho)}')
     else:
         print(resultado)
